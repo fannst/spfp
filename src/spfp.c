@@ -1,5 +1,9 @@
 #include "spfp.h"
 
+/**************************************************************
+ * SPFP Protocol Itself
+ **************************************************************/
+
 /// Adds a single byte to specified checksum.
 uint8_t spfp_checksum_add (uint8_t cs, uint8_t val) {
 	if (((uint16_t) cs) + ((uint16_t) val) > 0xFF) {
@@ -27,9 +31,7 @@ uint8_t spfp_calc_checksum (const spfp_packet_t *packet) {
 
 /// The dummy write method, which can be overwritten by implementation.
 void __attribute__ (( weak )) __spfp_write_byte (uint8_t byte) {
-	#ifdef __SPFP_MAIN
-	printf ("%02x\r\n", byte);
-	#endif
+
 }
 
 /// Writes an packet to the other device.
@@ -56,4 +58,13 @@ void spfp_write_packet (const spfp_packet_t *packet) {
 
 	// Writes the end flag.
 	__spfp_write_byte (SPFP_END_FLAG);
+}
+
+/**************************************************************
+ * SPFP StateMachine
+ **************************************************************/
+
+/// Updates the state machine with a new byte, kinda ticks it or something.
+void spfp_update (spfp_sm_t *sm, uint8_t byte) {
+
 }

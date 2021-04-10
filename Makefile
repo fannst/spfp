@@ -14,3 +14,6 @@ OBJECTS := $(SOURCES:.c=.o)
 
 all: $(OBJECTS)
 	$(GCC) $(GCC_ARGS) $(OBJECTS)
+
+clean:
+	rm -rf $(OBJECTS)
