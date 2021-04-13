@@ -1,3 +1,21 @@
+/*
+
+Copyright 2021 Luke A.C.A. Rieff
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+*/
+
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -5,9 +23,9 @@
 #ifndef _SPFP_H
 #define _SPFP_H
 
-#define SPFP_START_FLAG					(0x40)
-#define SPFP_END_FLAG					(0x41)
-#define SPFP_ESCAPE_FLAG				(0x42)
+#define SPFP_START_FLAG					(0x01)
+#define SPFP_END_FLAG					(0x02)
+#define SPFP_ESCAPE_FLAG				(0x03)
 
 /**************************************************************
  * SPFP Datatypes
@@ -20,6 +38,7 @@ typedef struct __attribute__ (( packed )) {
 } spfp_packet_t;
 
 typedef struct {
+	void			*udata;
 	/* Buffer Stuff */
 	uint8_t *		b;				/* The Buffer */
 	uint16_t		b_capacity;		/* The Buffer Capacity */
@@ -40,14 +59,23 @@ uint8_t spfp_checksum_add (uint8_t cs, uint8_t val);
 uint8_t spfp_calc_checksum (const spfp_packet_t *packet);
 
 /// The dummy write method, which can be overwritten by implementation.
-void __attribute__ (( weak )) __spfp_write_byte (uint8_t byte);
+void __attribute__ (( weak )) __spfp_write_byte (uint8_t byte, void *u);
 
 /// Writes an packet to the other device.
-void spfp_write_packet (const spfp_packet_t *packet);
+void spfp_write_packet (const spfp_packet_t *packet, void *u);
 
 /**************************************************************
  * SPFP StateMachine
  **************************************************************/
+
+/// Handles an overflwo of the buffer in a state machine.
+void __attribute__ (( weak )) __spfp_sm_overflow_handler (spfp_sm_t *sm);
+
+/// Gets called once a valid packet has been received.
+void __attribute__ (( weak )) __spfp_sm_packet_handler (spfp_sm_t *sm);
+
+/// Initializes an SPFP state machine.
+void spfp_sm_init (spfp_sm_t *sm, uint8_t *b, uint16_t b_capacity);
 
 /// Updates the state machine with a new byte, kinda ticks it or something.
 void spfp_update (spfp_sm_t *sm, uint8_t byte);
