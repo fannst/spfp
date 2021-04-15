@@ -35,12 +35,12 @@ uint8_t spfp_checksum_add (uint8_t cs, uint8_t val) {
 
 /// Calculates the checksum for specified packet.
 uint8_t spfp_calc_checksum (const spfp_packet_t *packet) {
-	const uint8_t *p = (uint8_t *) packet;
-	uint8_t cs = 0x00;
+	const uint8_t *p = ((uint8_t *) packet);
+	uint8_t cs = 0x0000;
 
 	// Loops over the total packet, and adds each byte to the 
 	//  final checksum.
-	for (uint16_t i = 0; i < packet->len; ++i) {
+	for (uint8_t i = 0; i < packet->len; ++i) {
 		cs = spfp_checksum_add (cs, p[i]);
 	}
 
@@ -48,9 +48,7 @@ uint8_t spfp_calc_checksum (const spfp_packet_t *packet) {
 }
 
 /// The dummy write method, which can be overwritten by implementation.
-void __attribute__ (( weak )) __spfp_write_byte (uint8_t byte, void *u) {
-
-}
+extern void __spfp_write_byte (uint8_t byte, void *u);
 
 /// Writes an packet to the other device.
 void spfp_write_packet (const spfp_packet_t *packet, void *u) {
@@ -83,14 +81,10 @@ void spfp_write_packet (const spfp_packet_t *packet, void *u) {
  **************************************************************/
 
 /// Handles an overflwo of the buffer in a state machine.
-void __attribute__ (( weak )) __spfp_sm_overflow_handler (spfp_sm_t *sm) {
-
-}
+extern void __spfp_sm_overflow_handler (spfp_sm_t *sm);
 
 /// Gets called once a valid packet has been received.
-void __attribute__ (( weak )) __spfp_sm_packet_handler (spfp_sm_t *sm) {
-
-}
+extern void __spfp_sm_packet_handler (spfp_sm_t *sm);
 
 /// Initializes an SPFP state machine.
 void spfp_sm_init (spfp_sm_t *sm, uint8_t *b, uint16_t b_capacity) {

@@ -32,6 +32,10 @@ limitations under the License.
 #ifndef _SPFP_HELPERS_LINUX
 #define _SPFP_HELPERS_LINUX
 
+#ifdef __USE_CXX
+extern "C" {
+#endif
+
 typedef struct {
 	int32_t 		fd;			/* The File Descriptor */
 	spfp_sm_t		sm;			/* The SPFP State Machine */
@@ -45,5 +49,9 @@ void spfp_linux_session_write(spfp_linux_session_t *session, const spfp_packet_t
 
 /// Override for the write byte method.
 void __spfp_write_byte (uint8_t byte, void *u);
+
+#ifdef __USE_CXX
+}
+#endif
 
 #endif

@@ -23,6 +23,10 @@ limitations under the License.
 #ifndef _SPFP_H
 #define _SPFP_H
 
+#ifdef __USE_CXX
+extern "C" {
+#endif
+
 #define SPFP_START_FLAG					(0x01)
 #define SPFP_END_FLAG					(0x02)
 #define SPFP_ESCAPE_FLAG				(0x03)
@@ -33,7 +37,7 @@ limitations under the License.
 
 typedef struct __attribute__ (( packed )) {
 	uint16_t		len;			/* The Total Packet Length */
-	uint8_t			cs;				/* 16-bit Checksum (Same as IP protocol) */
+	uint8_t			cs;				/* 8-bit Checksum (Same as IP protocol) */
 	uint8_t			p[0];			/* The Packet Payload */
 } spfp_packet_t;
 
@@ -58,9 +62,6 @@ uint8_t spfp_checksum_add (uint8_t cs, uint8_t val);
 /// Calculates the checksum for specified packet.
 uint8_t spfp_calc_checksum (const spfp_packet_t *packet);
 
-/// The dummy write method, which can be overwritten by implementation.
-void __attribute__ (( weak )) __spfp_write_byte (uint8_t byte, void *u);
-
 /// Writes an packet to the other device.
 void spfp_write_packet (const spfp_packet_t *packet, void *u);
 
@@ -68,16 +69,14 @@ void spfp_write_packet (const spfp_packet_t *packet, void *u);
  * SPFP StateMachine
  **************************************************************/
 
-/// Handles an overflwo of the buffer in a state machine.
-void __attribute__ (( weak )) __spfp_sm_overflow_handler (spfp_sm_t *sm);
-
-/// Gets called once a valid packet has been received.
-void __attribute__ (( weak )) __spfp_sm_packet_handler (spfp_sm_t *sm);
-
 /// Initializes an SPFP state machine.
 void spfp_sm_init (spfp_sm_t *sm, uint8_t *b, uint16_t b_capacity);
 
 /// Updates the state machine with a new byte, kinda ticks it or something.
 void spfp_update (spfp_sm_t *sm, uint8_t byte);
+
+#ifdef __USE_CXX
+}
+#endif
 
 #endif

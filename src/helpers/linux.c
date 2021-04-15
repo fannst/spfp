@@ -21,7 +21,6 @@ limitations under the License.
 /// Creates a new SPFP Linux session instance.
 spfp_linux_session_t *spfp_linux_session_create(const char *path, uint16_t b_size, uint32_t baud) {
 	struct termios tty;
-	struct sigaction sa;
 	int32_t fd;
 
 	//
@@ -80,6 +79,7 @@ void spfp_linux_session_write(spfp_linux_session_t *session, const spfp_packet_t
 
 /// Override for the write byte method.
 void __spfp_write_byte (uint8_t byte, void *u) {
+	printf ("%02x\r\n", byte);
 	spfp_linux_session_t *session = (spfp_linux_session_t *) u;
 	if (write (session->fd, &byte, 1) < 0) {
 		fprintf (stderr, "Failed to write byte %d:%s\r\n", errno, strerror (errno));
